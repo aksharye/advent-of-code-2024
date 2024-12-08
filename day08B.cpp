@@ -32,14 +32,11 @@ int main() {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i == j) continue;
-                // add antennas as they count
-                antinodes.insert(v[i]);
-                antinodes.insert(v[j]);
                 // keep adding inline antennas until out of bounds
                 ll dx = v[i].first - v[j].first;
                 ll dy = v[i].second - v[j].second;
-                ll x = v[i].first + dx;
-                ll y = v[i].second + dy;
+                ll x = v[i].first;
+                ll y = v[i].second;
                 while (check_bounds(x,y)) {
                     antinodes.insert({x,y});
                     x += dx;
