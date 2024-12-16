@@ -1,55 +1,68 @@
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
+using ll = int64_t;
 using ld = long double;
 #define pb push_back
 
-// grid and visited tracker
-vector<string> grid;
-vector<vector<bool>> visited;
+// i did the same thing for parts A and B because i didnt read the 100 constraint for A
 
-// helper to check bounds
-bool check_bounds(int x, int y) {
-    return x >= 0 && x < grid.size() && y >= 0 && y < grid[0].size();
+// helper functions to read in the values of X and Y
+ll read_x (string s) {
+    ll n = s.size();
+    n -= 3;
+    return stoll(s.substr(2,n));
 }
 
-// dfs a region and compute A and P
-void dfs(ll x, ll y) {
-    if (visited[x][y]) return;
-
-    visited[x][y] = true;
-
-    // direction arrays
-    ll dx [] = {0, 1, 0, -1};
-    ll dy [] = {-1, 0, 1, 0};
-
-    // loop through directions and dfs through region
-    for (int k = 0; k < 4; k++) {
-        ll nx = x + dx[k];
-        ll ny = y + dy[k];
-        if (check_bounds(nx,ny)) {
-            if (grid[nx][ny] == grid[x][y]) {
-                dfs(nx,ny);
-            } 
-
-        }
-    }
+ll read_y (string s) {
+    ll n = s.size();
+    n -= 2;
+    return stoll(s.substr(2,n));
 }
 
 int main() {
-    // keep track of price
-    ll ans = 0;
+    // keep track of tokens
+    ll tokens = 0;
 
-    // read in grid
+    // read in claw machine values
     string line;
+    ll ct = 0;
+    ll XA, XB, YA, YB;
     while (getline(cin, line)) {
-        grid.pb(line);
-        vector<bool> v (line.size(), false); visited.pb(v);
+        if (line.size() == 0) continue;
+        istringstream iss (line);
+
+        ct++;
+        if (ct % 3 == 0) {
+            string _, x, y; iss >> _ >> x >> y;
+
+            ll X = read_x(x); ll Y = read_y(y);
+            X += 1e13; Y += 1e13; // add offsets
+
+            // solve the system, count tokens only if sol exists
+            // i checked beforehand to make sure there were no eqns with inf sols
+            ll XXB = XB; XXB *= YA;
+            ll YYB = YB; YYB *= XA;
+
+            ll XX = X; XX *= YA;
+            ll YY = Y; YY *= XA;
+
+            if (abs(XX - YY) % abs(XXB - YYB) == 0) {
+                ll B = (XX - YY)/(XXB - YYB);
+                if (abs(X - B * XB) % abs(XA) == 0) {
+                    ll A = (X - B * XB)/XA;
+                    tokens += 3 * A + B;
+                }
+            }
+        } else if (ct % 3 == 1) {
+            string _, __, x, y; iss >> _ >> __ >> x >> y;
+            XA = read_x(x);
+            YA = read_y(y);
+        } else {
+            string _, __, x, y; iss >> _ >> __ >> x >> y;
+            XB = read_x(x);
+            YB = read_y(y);
+        }   
     }
 
-    // dfs through regions, track A and P, and reset
-    ll n = grid.size();
-    ll m = grid[0].size();
-
-    cout << ans << endl;
+    cout << tokens << endl;
 }
